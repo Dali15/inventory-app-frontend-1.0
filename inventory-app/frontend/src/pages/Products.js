@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 
 const Products = () => {
-    const [products] = useState([
+    const [products, setProducts] = useState([
         { id: 1, name: 'Laptop', category: 'Electronics', price: 999.99, stock: 15, status: 'in-stock' },
         { id: 2, name: 'Mouse', category: 'Accessories', price: 29.99, stock: 45, status: 'in-stock' },
         { id: 3, name: 'Keyboard', category: 'Accessories', price: 79.99, stock: 8, status: 'low-stock' },
         { id: 4, name: 'Monitor', category: 'Electronics', price: 349.99, stock: 0, status: 'out-of-stock' },
         { id: 5, name: 'USB Cable', category: 'Accessories', price: 9.99, stock: 120, status: 'in-stock' }
     ]);
+    const [showForm, setShowForm] = useState(false);
+    const [name, setName] = useState("");
+    const [category, setCategory] = useState("");
+    const [price, setPrice] = useState("");
+    const [stock, setStock] = useState("");
 
     const getStatusClass = (status) => {
         switch(status) {
@@ -26,7 +31,23 @@ const Products = () => {
             default: return status;
         }
     };
-
+    const handlesubmit = (e) => {
+        e.preventDefault();
+        const newProduct = {
+            id: products.length ? Math.max(...products.map(product => product.id)) + 1 : 1,
+            name,
+            category,
+            price: parseFloat(price),
+            stock: parseInt(stock),
+            status: parseInt(stock) > 0 ? (parseInt(stock) < 10 ? 'low-stock' : 'in-stock') : 'out-of-stock'
+        };
+        setProducts(prev => [...prev, newProduct]);
+        setName("");
+        setCategory("");
+        setPrice("");
+        setStock("");
+        setShowForm(false);
+    };
     return (
         <div>
             <div className="page-header">
@@ -35,8 +56,25 @@ const Products = () => {
             </div>
 
             <div style={{ marginBottom: '20px' }}>
-                <button className="btn btn-primary">+ Ajouter un Produit</button>
+                <button className="btn btn-primary"  onClick={() => setShowForm(true)}>+ Ajouter un Produit</button>
             </div>
+            {showForm && (
+                <div className="form-container">
+                    <h2>Ajouter un produit</h2>
+
+                    <form onSubmit={handlesubmit}>
+                        <input type="text" placeholder="Nom du produit" value={name} onChange={(e)=>setName(e.target.value)}/>
+                        <input type="text" placeholder="Catégorie" value={category} onChange={(e)=>setCategory(e.target.value)} />
+                        <input type="number" placeholder="Prix" value={price} onChange={(e)=>setPrice(e.target.value)}/>
+                        <input type="number" placeholder="Stock" value={stock} onChange={(e)=>setStock(e.target.value)}/>
+
+                        <button type="submit">Enregistrer</button>
+                        <button type="button" onClick={() => setShowForm(false)}>
+                            Annuler
+                        </button>
+                    </form>
+                </div>
+            )}
 
             <table>
                 <thead>
