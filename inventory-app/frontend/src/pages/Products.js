@@ -13,6 +13,7 @@ const Products = () => {
     const [category, setCategory] = useState("");
     const [price, setPrice] = useState("");
     const [stock, setStock] = useState("");
+    const [editingId, setEditingId] = useState(null);
 
     const getStatusClass = (status) => {
         switch(status) {
@@ -41,13 +42,31 @@ const Products = () => {
             stock: parseInt(stock),
             status: parseInt(stock) > 0 ? (parseInt(stock) < 10 ? 'low-stock' : 'in-stock') : 'out-of-stock'
         };
-        setProducts(prev => [...prev, newProduct]);
         setName("");
         setCategory("");
         setPrice("");
         setStock("");
         setShowForm(false);
+        if (editingId !== null) {
+            setProducts(prev =>
+                prev.map(product =>
+                    product.id === editingId ? newProduct : product
+                )
+            );
+        } else {
+            setProducts(prev => [...prev, newProduct]);
+        }
+        setEditingId(null);
     };
+    const handleEdit = (product) => {
+    setName(product.name);
+    setCategory(product.category);
+    setPrice(product.price.toString());
+    setStock(product.stock.toString());
+    setEditingId(product.id);
+
+    setShowForm(true);
+};
     return (
         <div>
             <div className="page-header">
@@ -102,7 +121,7 @@ const Products = () => {
                                 </span>
                             </td>
                             <td>
-                                <button className="btn btn-secondary" style={{ padding: '5px 10px', fontSize: '12px', marginRight: '5px' }}>Éditer</button>
+                                <button className="btn btn-secondary" style={{ padding: '5px 10px', fontSize: '12px', marginRight: '5px' }} onClick={() => handleEdit(product)} >Éditer</button>
                                 <button className="btn" style={{ padding: '5px 10px', fontSize: '12px', backgroundColor: '#e74c3c', color: 'white' }}>Supprimer</button>
                             </td>
                         </tr>
